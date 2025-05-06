@@ -1,0 +1,79 @@
+openapi: 3.0.0
+info:
+  title: Reading List API
+  version: v1
+servers:
+  - url: http://localhost:5000/api  # 假設你的後端會在本地的 5000 port 運行
+
+paths:
+  /reading-list/add:
+    post:
+      summary: 新增一本想讀的書籍到閱讀清單
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: 書籍的標題
+                author:
+                  type: string
+                  description: 書籍的作者
+              required:
+                - title
+                - author
+      responses:
+        '201':
+          description: 成功新增書籍
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 書籍的唯一識別碼
+                  title:
+                    type: string
+                    description: 書籍的標題
+                  author:
+                    type: string
+                    description: 書籍的作者
+        '400':
+          description: 請求格式錯誤
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: 錯誤訊息
+        '500':
+          description: 伺服器內部錯誤
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: 錯誤訊息
+
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 書籍的唯一識別碼
+        title:
+          type: string
+          description: 書籍的標題
+        author:
+          type: string
+          description: 書籍的作者
