@@ -4,10 +4,12 @@ namespace Server.ReadingList;
 
 [ApiController]
 [Route("api/reading-list")]
-public class ReadingListController() : ControllerBase
+public class ReadingListController(ReadingListContext context) : ControllerBase
 {
+    private readonly ReadingListContext _context = context;
+
     [HttpPost("add")]
-    public async Task<ActionResult<BookInfo>> AddBookToReadingList(AddingBookDTO dto)
+    public async Task<ActionResult<BookDTO>> AddBookToReadingList(AddingBookDTO dto)
     {
         string? error = dto.Validate();
 
@@ -16,6 +18,20 @@ public class ReadingListController() : ControllerBase
             return BadRequest(new { error });
         }
 
-        throw new NotImplementedException();
+        Book book = new()
+        {
+            Title = dto.Title,
+            Author = dto.Author,
+        };
+
+        _context.Books.Add(book);
+        await _context.SaveChangesAsync();
+
+        return StatusCode(201, new BookDTO
+        {
+            Id = book.Id,
+            Title = book.Title,
+            Author = book.Author,
+        });
     }
 }

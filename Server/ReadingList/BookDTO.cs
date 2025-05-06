@@ -1,6 +1,6 @@
 namespace Server.ReadingList;
 
-public class BookInfo
+public class BookDTO
 {
     public long Id { get; set; }
     public required string Title { get; set; }
