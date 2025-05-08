@@ -7,39 +7,23 @@
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-
-
-  <div class="container mt-5">
-    <form @submit.prevent="addBook">
-      <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
-        <input
-          type="text"
-          class="form-control"
-          id="title"
-          v-model="book.title"
-          required
-        />
-       
-      </div>
-      <div class="mb-3">
-        <label for="author" class="form-label">Author</label>
-        <input
-          type="text"
-          class="form-control"
-          id="author"
-          v-model="book.author"
-          required
-        />
-      </div>
-      <button type="submit" class="btn btn-primary" :disabled="isLoading">
-        Add Book
-      </button>
-    </form>
-  </div>
+    <div class="container mt-5">
+      <form @submit.prevent="addBook">
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" class="form-control" id="title" v-model="book.title" required />
+        </div>
+        <div class="mb-3">
+          <label for="author" class="form-label">Author</label>
+          <input type="text" class="form-control" id="author" v-model="book.author" required />
+        </div>
+        <button type="submit" class="btn btn-primary" :disabled="isLoading">
+          Add Book
+        </button>
+      </form>
     </div>
+  </div>
 </template>
-
 
 <script setup>
 import { ref } from 'vue';
@@ -55,6 +39,8 @@ const successMessage = ref(null);
 const addBook = async () => {
   isLoading.value = true;
   error.value = null;
+  successMessage.value = null;
+
   try {
     const response = await fetch('/api/reading-list/add', {
       method: 'POST',
@@ -75,17 +61,14 @@ const addBook = async () => {
       }
       return;
     }
-    
-    // Assuming the API returns the added book data
+
     const data = await response.json();
-    console.log('Book added:', data);
-    // Reset the form
-    book.value = { title: '', author: '' };    
+
+    book.value = { title: '', author: '' };
     successMessage.value = 'Book added successfully!';
-    
   } catch (error) {
     error.value = "An unexpected error occurred. Please try again later.";
-  }finally{
+  } finally {
     isLoading.value = false;
   }
 };
