@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Server.ReadingList;
 
@@ -33,5 +34,18 @@ public class ReadingListController(ReadingListContext context) : ControllerBase
             Title = book.Title,
             Author = book.Author,
         });
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<BookDTO>>> GetReadingList()
+    {
+        IEnumerable<BookDTO> books = await _context.Books.Select(book => new BookDTO
+        {
+            Id = book.Id,
+            Title = book.Title,
+            Author = book.Author,
+        }).ToListAsync();
+
+        return Ok(books);
     }
 }

@@ -31,17 +31,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    description: 書籍的唯一識別碼
-                  title:
-                    type: string
-                    description: 書籍的標題
-                  author:
-                    type: string
-                    description: 書籍的作者
+                $ref: '#/components/schemas/Book'
         '400':
           description: 請求格式錯誤
           content:
@@ -52,16 +42,18 @@ paths:
                   error:
                     type: string
                     description: 錯誤訊息
-        '500':
-          description: 伺服器內部錯誤
+  /reading-list:
+    get:
+      summary: 獲取所有想讀的書籍列表
+      responses:
+        '200':
+          description: 成功返回書籍列表
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: 錯誤訊息
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
 
 components:
   schemas:

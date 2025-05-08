@@ -28,6 +28,8 @@
 <script setup>
 import { ref } from 'vue';
 
+const emit = defineEmits(['didAddBook'])
+
 const error = ref(null);
 const book = ref({
   title: '',
@@ -66,6 +68,7 @@ const addBook = async () => {
 
     book.value = { title: '', author: '' };
     successMessage.value = 'Book added successfully!';
+    emit('didAddBook');
   } catch (error) {
     error.value = "An unexpected error occurred. Please try again later.";
   } finally {
