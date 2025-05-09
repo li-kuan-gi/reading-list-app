@@ -5,9 +5,10 @@ namespace Server.ReadingList;
 
 [ApiController]
 [Route("api/reading-list")]
-public class ReadingListController(ReadingListContext context) : ControllerBase
+public class ReadingListController(ReadingListContext context, ILogger<ReadingListController> logger) : ControllerBase
 {
     private readonly ReadingListContext _context = context;
+    private readonly ILogger<ReadingListController> _logger = logger;
 
     [HttpPost("add")]
     public async Task<ActionResult<BookDTO>> AddBookToReadingList(AddingBookDTO dto)
@@ -47,5 +48,48 @@ public class ReadingListController(ReadingListContext context) : ControllerBase
         }).ToListAsync();
 
         return Ok(books);
+    }
+
+    [HttpPost("{id}/delete")]
+    public async Task<ActionResult> DeleteBookFromReadingList(long id)
+    {
+        int maxAttempts = 3;
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            Book? book = await _context.Books.FindAsync(id);
+
+            if (book is null)
+            {
+                return NotFound(new { error = $"Book with id {id} not found." });
+            }
+
+            _context.Books.Remove(book);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                _logger.LogWarning("Concurrency conflict while deleting book with id {Id}. Attempt {Attempt} of {MaxAttempts}.", id, attempt + 1, maxAttempts);
+
+                if (attempt == maxAttempts - 1)
+                {
+                    _logger.LogError(
+                        "Failed to delete book with id {Id} after {MaxAttempts} attempts due to concurrency conflicts.",
+                        id, maxAttempts
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An unexpected error occurred while deleting book with id {Id}: {ErrorMessage}", id, ex.Message);
+                throw;
+            }
+        }
+
+        throw new Exception("Failed to delete book after multiple attempts.");
     }
 }
