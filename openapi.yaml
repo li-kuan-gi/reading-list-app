@@ -54,6 +54,29 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Book'
+  /reading-list/{id}/delete:
+    post:
+      summary: 刪除一本指定 ID 的想讀書籍
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 要刪除的書籍的唯一識別碼
+      responses:
+        '204':
+          description: 成功刪除書籍，無返回內容
+        '404':
+          description: 找不到指定 ID 的書籍
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: 錯誤訊息
 
 components:
   schemas:
